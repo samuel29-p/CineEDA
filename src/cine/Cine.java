@@ -14,7 +14,7 @@ public class Cine {
     private Venta[] ventas;
 
 
-    public Cine(String nombre, String direccion) {
+    public Cine (String nombre, String direccion) {
         this.nombre = nombre;
         this.direccion = direccion;
         this.peliculas = new Pelicula[0];
