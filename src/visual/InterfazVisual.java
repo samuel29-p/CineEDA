@@ -1,4 +1,4 @@
-package Visual;
+package visual;
 
 import cine.*;
 import guardado.SistemaGuardadoCine;
@@ -89,6 +89,7 @@ public class InterfazVisual extends JFrame {
                     "Clasificacion", JOptionPane.QUESTION_MESSAGE, null, Clasificacion.values(), Clasificacion.values()[0]);
 
             cine.addPelicula(codigo, titulo, duracionMin, genero, clasificacion);
+            gestor.guardarTodo(cine);
             JOptionPane.showMessageDialog(this, "Pelicula agregada correctamente.");
         } catch (DatoInvalidoException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -107,6 +108,7 @@ public class InterfazVisual extends JFrame {
                     JOptionPane.QUESTION_MESSAGE, null, TipoSala.values(), TipoSala.values()[0]);
 
             cine.addSala(codigo, filas, columnas, tipoSala);
+            gestor.guardarTodo(cine);
             JOptionPane.showMessageDialog(this, "Sala agregada correctamente.");
         } catch (DatoInvalidoException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -131,6 +133,7 @@ public class InterfazVisual extends JFrame {
             LocalDateTime fechaHora = LocalDateTime.of(anio, mes, dia, hora, minuto);
 
             cine.addFuncion(codigo, codigoPelicula, codigoSala, fechaHora, precioBase);
+            gestor.guardarTodo(cine);
             JOptionPane.showMessageDialog(this, "Funcion agregada correctamente.");
         } catch (DatoInvalidoException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -147,6 +150,7 @@ public class InterfazVisual extends JFrame {
             String correo = JOptionPane.showInputDialog(this, "Correo:");
 
             cine.addCliente(cedula, nombre, edad, correo);
+            gestor.guardarTodo(cine);
             JOptionPane.showMessageDialog(this, "Cliente agregado correctamente.");
         } catch (DatoInvalidoException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -200,6 +204,7 @@ public class InterfazVisual extends JFrame {
         try {
             String codigo = JOptionPane.showInputDialog(this, "Codigo de la pelicula a eliminar:");
             cine.eliminarPelicula(codigo);
+            gestor.guardarTodo(cine);
             JOptionPane.showMessageDialog(this, "Pelicula eliminada correctamente.");
         } catch (DatoInvalidoException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -210,6 +215,7 @@ public class InterfazVisual extends JFrame {
         try {
             String codigo = JOptionPane.showInputDialog(this, "Codigo de la funcion a eliminar:");
             cine.eliminarFuncion(codigo);
+            gestor.guardarTodo(cine);
             JOptionPane.showMessageDialog(this, "Funcion eliminada correctamente.");
         } catch (DatoInvalidoException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -220,6 +226,7 @@ public class InterfazVisual extends JFrame {
         try {
             String cedula = JOptionPane.showInputDialog(this, "Cedula del cliente a eliminar:");
             cine.eliminarCliente(cedula);
+            gestor.guardarTodo(cine);
             JOptionPane.showMessageDialog(this, "Cliente eliminado correctamente.");
         } catch (DatoInvalidoException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);

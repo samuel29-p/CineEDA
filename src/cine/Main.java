@@ -1,6 +1,6 @@
 package cine;
 
-import Visual.InterfazVisual;
+import visual.InterfazVisual;
 import guardado.SistemaGuardadoCine;
 
 public class Main {
