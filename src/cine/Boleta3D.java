@@ -19,6 +19,6 @@ public class Boleta3D extends Boleta {
         }
         return total;
     }
-
+    @Override
     public String getTipo() { return "3D"; }
 }

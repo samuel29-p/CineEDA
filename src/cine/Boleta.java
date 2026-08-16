@@ -51,6 +51,7 @@ public abstract class Boleta implements Reembolsable {
 
     public abstract double calcularPrecio();
 
+
     public abstract String getTipo();
 
 
