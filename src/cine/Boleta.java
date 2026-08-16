@@ -51,6 +51,8 @@ public abstract class Boleta implements Reembolsable {
 
     public abstract double calcularPrecio();
 
+    public abstract String getTipo();
+
 
     @Override
     public boolean esReembolsable(int horasAntes) {
@@ -77,5 +79,17 @@ public abstract class Boleta implements Reembolsable {
 
     public Funcion getFuncion() {
         return funcion;
+    }
+
+    public int getNumAsientos() {
+        return asientos.length;
+    }
+
+    public Asiento getAsiento(int indice) {
+        Asiento asiento = null;
+        if (indice >= 0 && indice < asientos.length) {
+            asiento = asientos[indice];
+        }
+        return asiento;
     }
 }

@@ -173,7 +173,7 @@ public class Cine {
         }
 
         salas = Arrays.copyOf(salas, salas.length + 1);
-        salas[salas.length - 1] = new Sala(codigo, filas, columnas, tipoSala);
+        salas[salas.length - 1] = new Sala(tipoSala, codigo, filas, columnas);
     }
 
     public void addPelicula(String codigo, String titulo, int duracionMin, Genero genero, Clasificacion clasificacion)
@@ -198,7 +198,7 @@ public class Cine {
         }
 
         peliculas = Arrays.copyOf(peliculas, peliculas.length + 1);
-        peliculas[peliculas.length - 1] = new Pelicula(codigo, titulo, duracionMin, genero, clasificacion);
+        peliculas[peliculas.length - 1] = new Pelicula(titulo, codigo, duracionMin, genero, clasificacion);
     }
 
     public void addFuncion(String codigo, String codigoPelicula, String codigoSala, LocalDateTime fechaHora, double precioBase) throws DatoInvalidoException{
