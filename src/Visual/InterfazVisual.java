@@ -1,4 +1,7 @@
-package cine;
+package Visual;
+
+import cine.*;
+import guardado.SistemaGuardadoCine;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -9,9 +12,12 @@ import java.time.LocalDateTime;
 public class InterfazVisual extends JFrame {
 
     private Cine cine;
+    private SistemaGuardadoCine gestor;
 
-    public InterfazVisual(Cine cine) {
+    public InterfazVisual(Cine cine, SistemaGuardadoCine gestor) {
+
         this.cine = cine;
+        this.gestor = gestor;
 
         setTitle("Interfaz Visual - " + cine.getNombre());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

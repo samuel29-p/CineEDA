@@ -7,12 +7,11 @@ public class Sala {
     private boolean disponibilidad;
     private Asiento[][] asientos;
 
-    public Sala(TipoSala tipoSala, String codigo, boolean disponibilidad,
-                int filas, int columnas) {
+    public Sala(TipoSala tipoSala, String codigo, int filas, int columnas) {
 
         this.tipoSala = tipoSala;
         this.codigo = codigo;
-        this.disponibilidad = disponibilidad;
+        this.disponibilidad = true;
 
         asientos = new Asiento[filas][columnas];
     }
@@ -35,5 +34,15 @@ public class Sala {
 
     public String getCodigo() {
         return codigo;
+    }
+
+    public TipoSala getTipoSala() { return tipoSala; }
+
+    public void setDisponibilidad(boolean disponibilidad) {
+        this.disponibilidad = disponibilidad;
+    }
+
+    public boolean isDisponible() {
+        return disponibilidad;
     }
 }

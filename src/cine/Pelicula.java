@@ -4,11 +4,11 @@ public class Pelicula {
 
     private String titulo;
     private String codigo;
-    private String duracionMin;
+    private int duracionMin;
     private Genero genero;
     private Clasificacion clasificacion;
 
-    public Pelicula(String titulo, String codigo, String duracionMin,
+    public Pelicula(String titulo, String codigo, int duracionMin,
                     Genero genero, Clasificacion clasificacion) {
 
         this.titulo = titulo;
@@ -24,5 +24,24 @@ public class Pelicula {
 
     public String getCodigo() {
         return codigo;
+    }
+
+    public String getTitulo() { return titulo; }
+
+    public int getDuracionMin() { return duracionMin; }
+
+    public Genero getGenero() { return genero; }
+
+    public Clasificacion getClasificacion() { return clasificacion; }
+
+    @Override
+    public String toString() {
+        return "Pelicula{" +
+                "titulo='" + titulo + '\'' +
+                ", codigo='" + codigo + '\'' +
+                ", duracionMin=" + duracionMin +
+                ", genero=" + genero +
+                ", clasificacion=" + clasificacion +
+                '}';
     }
 }

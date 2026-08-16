@@ -17,4 +17,7 @@ public class BoletaGeneral extends Boleta {
         }
         return total;
     }
+
+    @Override
+    public String getTipo() { return "GENERAL"; }
 }
