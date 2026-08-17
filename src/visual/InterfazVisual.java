@@ -13,6 +13,7 @@ public class InterfazVisual extends JFrame {
 
     private Cine cine;
     private SistemaGuardadoCine gestor;
+	private Cine cine;
 
     public InterfazVisual(Cine cine, SistemaGuardadoCine gestor) {
 
