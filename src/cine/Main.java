@@ -12,7 +12,7 @@ public class Main {
         gestor.cargarTodo(cine);
 
         if (cine.getNumSalas() == 0) {
-            DatosCine.cargarTodo(cine);
+            DatosCine.crearTodo(cine);
             gestor.guardarTodo(cine);
         }
 
