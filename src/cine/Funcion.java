@@ -1,6 +1,7 @@
 package cine;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Funcion {
 
@@ -117,5 +118,15 @@ public class Funcion {
     public Asiento getAsiento(int fila, int columna) {
         return asientos[fila][columna];
     }
-}
 
+    @Override
+    public String toString() {
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        return "Funcion " + codigo
+                + " | " + pelicula.getTitulo()
+                + " | Sala " + sala.getCodigo() + " (" + sala.getTipoSala() + ")"
+                + " | " + fechaHora.format(formato)
+                + " | Precio: " + precio
+                + " | Disponibles: " + asientosDisponibles() + "/" + (getFilas() * getColumnas());
+    }
+}

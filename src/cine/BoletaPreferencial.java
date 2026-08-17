@@ -17,5 +17,8 @@ public class BoletaPreferencial extends Boleta {
         }
         return total;
     }
+
+    @Override
+    public String getTipo() { return "PREFERENCIAL"; }
 }
 

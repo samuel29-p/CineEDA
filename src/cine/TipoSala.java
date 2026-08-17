@@ -4,7 +4,7 @@ public enum TipoSala {
 
     ESTANDAR(10),
     PREMIUM(15),
-    _3D(20);
+    SALA_3D(20);
 
     private double precioSala;
 

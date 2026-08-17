@@ -1,4 +1,7 @@
-package cine;
+package visual;
+
+import cine.*;
+import guardado.SistemaGuardadoCine;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -9,9 +12,12 @@ import java.time.LocalDateTime;
 public class InterfazVisual extends JFrame {
 
     private Cine cine;
+    private SistemaGuardadoCine gestor;
 
-    public InterfazVisual(Cine cine) {
+    public InterfazVisual(Cine cine, SistemaGuardadoCine gestor) {
+
         this.cine = cine;
+        this.gestor = gestor;
 
         setTitle("Interfaz Visual - " + cine.getNombre());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -41,6 +47,10 @@ public class InterfazVisual extends JFrame {
         JButton btnBuscarPelicula = new JButton("Buscar Pelicula");
         btnBuscarPelicula.addActionListener(e -> buscarPelicula());
         add(btnBuscarPelicula);
+
+        JButton btnBuscarPeliculasPorTitulo = new JButton("Buscar Pelicula por Titulo");
+        btnBuscarPeliculasPorTitulo.addActionListener(e -> buscarPorTitulo());
+        add(btnBuscarPeliculasPorTitulo);
 
         JButton btnBuscarSala = new JButton("Buscar Sala");
         btnBuscarSala.addActionListener(e -> buscarSala());
@@ -73,6 +83,10 @@ public class InterfazVisual extends JFrame {
         JButton btnVerResumen = new JButton("Ver Resumen del Cine");
         btnVerResumen.addActionListener(e -> verResumen());
         add(btnVerResumen);
+
+        JButton btnVenderBoleta = new JButton("Vender Boleta");
+        btnVenderBoleta.addActionListener(e -> venderBoleta());
+        add(btnVenderBoleta);
     }
 
     private void agregarPelicula() {
@@ -87,6 +101,7 @@ public class InterfazVisual extends JFrame {
                     "Clasificacion", JOptionPane.QUESTION_MESSAGE, null, Clasificacion.values(), Clasificacion.values()[0]);
 
             cine.addPelicula(codigo, titulo, duracionMin, genero, clasificacion);
+            gestor.guardarTodo(cine);
             JOptionPane.showMessageDialog(this, "Pelicula agregada correctamente.");
         } catch (DatoInvalidoException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -105,6 +120,7 @@ public class InterfazVisual extends JFrame {
                     JOptionPane.QUESTION_MESSAGE, null, TipoSala.values(), TipoSala.values()[0]);
 
             cine.addSala(codigo, filas, columnas, tipoSala);
+            gestor.guardarTodo(cine);
             JOptionPane.showMessageDialog(this, "Sala agregada correctamente.");
         } catch (DatoInvalidoException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -129,6 +145,7 @@ public class InterfazVisual extends JFrame {
             LocalDateTime fechaHora = LocalDateTime.of(anio, mes, dia, hora, minuto);
 
             cine.addFuncion(codigo, codigoPelicula, codigoSala, fechaHora, precioBase);
+            gestor.guardarTodo(cine);
             JOptionPane.showMessageDialog(this, "Funcion agregada correctamente.");
         } catch (DatoInvalidoException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -145,6 +162,7 @@ public class InterfazVisual extends JFrame {
             String correo = JOptionPane.showInputDialog(this, "Correo:");
 
             cine.addCliente(cedula, nombre, edad, correo);
+            gestor.guardarTodo(cine);
             JOptionPane.showMessageDialog(this, "Cliente agregado correctamente.");
         } catch (DatoInvalidoException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -159,8 +177,35 @@ public class InterfazVisual extends JFrame {
         if (pelicula == null) {
             JOptionPane.showMessageDialog(this, "No se encontro ninguna pelicula con ese codigo.");
         } else {
-            JOptionPane.showMessageDialog(this, "Titulo: " + pelicula.getTitulo());
+            JOptionPane.showMessageDialog(this,
+                    "Codigo: " + pelicula.getCodigo()
+                            + "\nTitulo: " + pelicula.getTitulo()
+                            + "\nDuracion: " + pelicula.getDuracionMin() + " min"
+                            + "\nGenero: " + pelicula.getGenero()
+                            + "\nClasificacion: " + pelicula.getClasificacion()
+                            + " (desde " + pelicula.getClasificacion().getEdadMinima() + " años)");
         }
+    }
+
+    private void buscarPorTitulo() {
+        String texto = JOptionPane.showInputDialog(this, "Escriba parte del titulo:");
+        if (texto == null) return;
+
+        Pelicula[] encontradas = cine.buscarPeliculasPorTitulo(texto);
+        if (encontradas.length == 0) {
+            JOptionPane.showMessageDialog(this, "Ninguna pelicula coincide con '" + texto + "'.");
+            return;
+        }
+
+        String lista = "Se encontraron " + encontradas.length + " pelicula(s):\n\n";
+        int i = 0;
+        while (i < encontradas.length) {
+            lista = lista + encontradas[i].getCodigo() + " - " + encontradas[i].getTitulo()
+                    + " (" + encontradas[i].getGenero() + ", "
+                    + encontradas[i].getDuracionMin() + " min)\n";
+            i++;
+        }
+        JOptionPane.showMessageDialog(this, lista);
     }
 
     private void buscarSala() {
@@ -169,18 +214,36 @@ public class InterfazVisual extends JFrame {
         if (sala == null) {
             JOptionPane.showMessageDialog(this, "No se encontro ninguna sala con ese codigo.");
         } else {
-            JOptionPane.showMessageDialog(this, "Sala encontrada: " + sala.getCodigo());
+            JOptionPane.showMessageDialog(this,
+                    "Codigo: " + sala.getCodigo()
+                            + "\nTipo: " + sala.getTipoSala()
+                            + "\nDistribucion: " + sala.getFilas() + " filas x " + sala.getColumnas() + " columnas"
+                            + "\nCapacidad: " + sala.capacidadSala() + " puestos"
+                            + "\nRecargo por sala: " + sala.getTipoSala().getPrecioSala()
+                            + "\nDisponible: " + sala.isDisponible());
         }
     }
 
     private void buscarFuncion() {
         String codigo = JOptionPane.showInputDialog(this, "Codigo de la funcion a buscar:");
+        if (codigo == null) return;
+
         Funcion funcion = cine.buscarFuncion(codigo);
         if (funcion == null) {
             JOptionPane.showMessageDialog(this, "No se encontro ninguna funcion con ese codigo.");
         } else {
-            JOptionPane.showMessageDialog(this, "Pelicula: " + funcion.getPelicula().getTitulo()
-                    + " | Asientos disponibles: " + funcion.asientosDisponibles());
+            int ocupados = funcion.getSala().capacidadSala() - funcion.asientosDisponibles();
+
+            JOptionPane.showMessageDialog(this,
+                    "Codigo: " + funcion.getCodigo()
+                            + "\nPelicula: " + funcion.getPelicula().getTitulo()
+                            + " (" + funcion.getPelicula().getDuracionMin() + " min)"
+                            + "\nSala: " + funcion.getSala().getCodigo()
+                            + " (" + funcion.getSala().getTipoSala() + ")"
+                            + "\nFecha y hora: " + funcion.getFechaHora()
+                            + "\nPrecio base: " + funcion.getPrecio()
+                            + "\nOcupados: " + ocupados + " de " + funcion.getSala().capacidadSala()
+                            + "\nDisponibles: " + funcion.asientosDisponibles());
         }
     }
 
@@ -190,7 +253,11 @@ public class InterfazVisual extends JFrame {
         if (cliente == null) {
             JOptionPane.showMessageDialog(this, "No se encontro ningun cliente con esa cedula.");
         } else {
-            JOptionPane.showMessageDialog(this, "Nombre: " + cliente.getNombre());
+            JOptionPane.showMessageDialog(this,
+                    "Cedula: " + cliente.getCedula()
+                            + "\nNombre: " + cliente.getNombre()
+                            + "\nEdad: " + cliente.getEdad()
+                            + "\nCorreo: " + cliente.getCorreo());
         }
     }
 
@@ -246,6 +313,7 @@ public class InterfazVisual extends JFrame {
         try {
             String codigo = JOptionPane.showInputDialog(this, "Codigo de la pelicula a eliminar:");
             cine.eliminarPelicula(codigo);
+            gestor.guardarTodo(cine);
             JOptionPane.showMessageDialog(this, "Pelicula eliminada correctamente.");
         } catch (DatoInvalidoException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -256,6 +324,7 @@ public class InterfazVisual extends JFrame {
         try {
             String codigo = JOptionPane.showInputDialog(this, "Codigo de la funcion a eliminar:");
             cine.eliminarFuncion(codigo);
+            gestor.guardarTodo(cine);
             JOptionPane.showMessageDialog(this, "Funcion eliminada correctamente.");
         } catch (DatoInvalidoException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -266,6 +335,7 @@ public class InterfazVisual extends JFrame {
         try {
             String cedula = JOptionPane.showInputDialog(this, "Cedula del cliente a eliminar:");
             cine.eliminarCliente(cedula);
+            gestor.guardarTodo(cine);
             JOptionPane.showMessageDialog(this, "Cliente eliminado correctamente.");
         } catch (DatoInvalidoException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -279,5 +349,102 @@ public class InterfazVisual extends JFrame {
                 + "\nClientes: " + cine.getNumClientes()
                 + "\nVentas: " + cine.getNumVentas();
         JOptionPane.showMessageDialog(this, resumen);
+    }
+
+    private void venderBoleta() {
+        try {
+            // Cliente
+            String cedula = JOptionPane.showInputDialog(this, "Cedula del cliente:");
+            if (cedula == null) return;
+
+            Cliente cliente = cine.buscarCliente(cedula);
+            if (cliente == null) {
+                JOptionPane.showMessageDialog(this, "No existe un cliente con esa cedula.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Funcion
+            String codigoFuncion = JOptionPane.showInputDialog(this, "Codigo de la funcion:");
+            if (codigoFuncion == null) return;
+
+            Funcion funcion = cine.buscarFuncion(codigoFuncion);
+            if (funcion == null) {
+                JOptionPane.showMessageDialog(this, "No existe una funcion con ese codigo.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (funcion.estaLlena()) {
+                JOptionPane.showMessageDialog(this, "Esa funcion ya no tiene asientos disponibles.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Asiento
+            String etiqueta = JOptionPane.showInputDialog(this, funcion + "\n\nAsiento (ejemplo: C4):");
+            if (etiqueta == null) return;
+
+            Asiento asiento = funcion.buscarAsiento(etiqueta);
+            if (asiento == null) {
+                JOptionPane.showMessageDialog(this, "Ese asiento no existe en la sala.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (asiento.isOcupado()) {
+                JOptionPane.showMessageDialog(this, "El asiento " + asiento.getEtiqueta() + " ya esta ocupado.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Tipo de boleta y forma de pago
+            String[] tipos = {"GENERAL", "PREFERENCIAL", "3D"};
+            String tipo = (String) JOptionPane.showInputDialog(this, "Tipo de boleta:", "Tipo de boleta",
+                    JOptionPane.QUESTION_MESSAGE, null, tipos, tipos[0]);
+            if (tipo == null) return;
+
+            FormaPago formaPago = (FormaPago) JOptionPane.showInputDialog(this, "Forma de pago:", "Forma de pago",
+                    JOptionPane.QUESTION_MESSAGE, null, FormaPago.values(), FormaPago.values()[0]);
+            if (formaPago == null) return;
+
+            // Se arma la boleta
+            Asiento[] asientos = new Asiento[1];
+            asientos[0] = asiento;
+
+            String codigoVenta = "V" + System.currentTimeMillis();
+            String codigoBoleta = "B" + System.currentTimeMillis();
+
+            Boleta boleta;
+            if (tipo.equals("PREFERENCIAL")) {
+                boleta = new BoletaPreferencial(codigoBoleta, funcion, asientos, cliente);
+            } else if (tipo.equals("3D")) {
+                boleta = new Boleta3D(codigoBoleta, funcion, asientos, cliente);
+            } else {
+                boleta = new BoletaGeneral(codigoBoleta, funcion, asientos, cliente);
+            }
+
+            Boleta[] boletas = new Boleta[1];
+            boletas[0] = boleta;
+
+            //Se registra la venta en el cine
+            Venta venta = new Venta(codigoVenta, cliente, boletas, asientos, 1, formaPago, LocalDateTime.now());
+            cine.registrarVenta(venta);
+
+            // Se ocupa el asiento y se guarda
+            funcion.ocuparAsiento(asiento.getFila(), asiento.getColumna());
+            gestor.guardarTodo(cine);
+
+            JOptionPane.showMessageDialog(this,
+                    "Venta registrada correctamente.\n\n"
+                            + funcion + "\n"
+                            + "Cliente: " + cliente.getNombre() + "\n"
+                            + "Asiento: " + asiento.getEtiqueta() + "\n"
+                            + "Tipo: " + boleta.getTipo() +"\n"
+                            + "Pago: " + formaPago + "\n"
+                            + "Total: " + venta.calcularTotal());
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(),
+                    "No se pudo registrar la venta", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }
