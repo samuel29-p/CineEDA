@@ -11,8 +11,9 @@ public class Main {
 
         gestor.cargarTodo(cine);
 
-        if (cine.getNumSalas() == 0){
-            DatosCine.cargarSalas(cine);
+        if (cine.getNumSalas() == 0) {
+            DatosCine.cargarTodo(cine);
+            gestor.guardarTodo(cine);
         }
 
         InterfazVisual ventana = new InterfazVisual(cine, gestor);

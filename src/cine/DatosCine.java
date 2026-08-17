@@ -72,4 +72,18 @@ public class DatosCine {
         cine.addFuncion("FC2", "C02", "SP01", LocalDateTime.of(2026, 9, 15, 21, 0), 19000);
         cine.addFuncion("FC3", "C03", "SP02", LocalDateTime.of(2026, 9, 15, 18, 0), 19000);
     }
+
+    public static void cargarTodo(Cine cine) {
+        cargarSalas(cine);
+        try {
+            cargarCatalogoAccion(cine);
+            cargarCatalogoAnimacion(cine);
+            cargarCatalogoTerror(cine);
+            cargarCatalogoDrama(cine);
+            cargarCatalogoSuspenso(cine);
+            cargarCatalogoComedia(cine);
+        } catch (DatoInvalidoException e) {
+            System.out.println("Error cargando catalogos: " + e.getMessage());
+        }
+    }
 }
