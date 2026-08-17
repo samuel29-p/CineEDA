@@ -73,7 +73,7 @@ public class DatosCine {
         cine.addFuncion("FC3", "C03", "SP02", LocalDateTime.of(2026, 9, 15, 18, 0), 19000);
     }
 
-    public static void cargarTodo(Cine cine) {
+    public static void crearTodo(Cine cine) {
         cargarSalas(cine);
         try {
             cargarCatalogoAccion(cine);
