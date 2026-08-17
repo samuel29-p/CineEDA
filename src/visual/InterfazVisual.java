@@ -79,6 +79,10 @@ public class InterfazVisual extends JFrame {
         JButton btnVerResumen = new JButton("Ver Resumen del Cine");
         btnVerResumen.addActionListener(e -> verResumen());
         add(btnVerResumen);
+
+        JButton btnVenderBoleta = new JButton("Vender Boleta");
+        btnVenderBoleta.addActionListener(e -> venderBoleta());
+        add(btnVenderBoleta);
     }
 
     private void agregarPelicula() {
@@ -293,5 +297,102 @@ public class InterfazVisual extends JFrame {
                 + "\nClientes: " + cine.getNumClientes()
                 + "\nVentas: " + cine.getNumVentas();
         JOptionPane.showMessageDialog(this, resumen);
+    }
+
+    private void venderBoleta() {
+        try {
+            // Cliente
+            String cedula = JOptionPane.showInputDialog(this, "Cedula del cliente:");
+            if (cedula == null) return;
+
+            Cliente cliente = cine.buscarCliente(cedula);
+            if (cliente == null) {
+                JOptionPane.showMessageDialog(this, "No existe un cliente con esa cedula.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Funcion
+            String codigoFuncion = JOptionPane.showInputDialog(this, "Codigo de la funcion:");
+            if (codigoFuncion == null) return;
+
+            Funcion funcion = cine.buscarFuncion(codigoFuncion);
+            if (funcion == null) {
+                JOptionPane.showMessageDialog(this, "No existe una funcion con ese codigo.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (funcion.estaLlena()) {
+                JOptionPane.showMessageDialog(this, "Esa funcion ya no tiene asientos disponibles.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Asiento
+            String etiqueta = JOptionPane.showInputDialog(this, funcion + "\n\nAsiento (ejemplo: C4):");
+            if (etiqueta == null) return;
+
+            Asiento asiento = funcion.buscarAsiento(etiqueta);
+            if (asiento == null) {
+                JOptionPane.showMessageDialog(this, "Ese asiento no existe en la sala.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (asiento.isOcupado()) {
+                JOptionPane.showMessageDialog(this, "El asiento " + asiento.getEtiqueta() + " ya esta ocupado.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Tipo de boleta y forma de pago
+            String[] tipos = {"GENERAL", "PREFERENCIAL", "3D"};
+            String tipo = (String) JOptionPane.showInputDialog(this, "Tipo de boleta:", "Tipo de boleta",
+                    JOptionPane.QUESTION_MESSAGE, null, tipos, tipos[0]);
+            if (tipo == null) return;
+
+            FormaPago formaPago = (FormaPago) JOptionPane.showInputDialog(this, "Forma de pago:", "Forma de pago",
+                    JOptionPane.QUESTION_MESSAGE, null, FormaPago.values(), FormaPago.values()[0]);
+            if (formaPago == null) return;
+
+            // Se arma la boleta
+            Asiento[] asientos = new Asiento[1];
+            asientos[0] = asiento;
+
+            String codigoVenta = "V" + System.currentTimeMillis();
+            String codigoBoleta = "B" + System.currentTimeMillis();
+
+            Boleta boleta;
+            if (tipo.equals("PREFERENCIAL")) {
+                boleta = new BoletaPreferencial(codigoBoleta, funcion, asientos, cliente);
+            } else if (tipo.equals("3D")) {
+                boleta = new Boleta3D(codigoBoleta, funcion, asientos, cliente);
+            } else {
+                boleta = new BoletaGeneral(codigoBoleta, funcion, asientos, cliente);
+            }
+
+            Boleta[] boletas = new Boleta[1];
+            boletas[0] = boleta;
+
+            //Se registra la venta en el cine
+            Venta venta = new Venta(codigoVenta, cliente, boletas, asientos, 1, formaPago, LocalDateTime.now());
+            cine.registrarVenta(venta);
+
+            // Se ocupa el asiento y se guarda
+            funcion.ocuparAsiento(asiento.getFila(), asiento.getColumna());
+            gestor.guardarTodo(cine);
+
+            JOptionPane.showMessageDialog(this,
+                    "Venta registrada correctamente.\n\n"
+                            + funcion + "\n"
+                            + "Cliente: " + cliente.getNombre() + "\n"
+                            + "Asiento: " + asiento.getEtiqueta() + "\n"
+                            + "Tipo: " + boleta.getTipo() +"\n"
+                            + "Pago: " + formaPago + "\n"
+                            + "Total: " + venta.calcularTotal());
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(),
+                    "No se pudo registrar la venta", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }
