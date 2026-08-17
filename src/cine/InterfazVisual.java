@@ -54,6 +54,10 @@ public class InterfazVisual extends JFrame {
         btnBuscarCliente.addActionListener(e -> buscarCliente());
         add(btnBuscarCliente);
 
+        JButton btnBuscarVenta = new JButton("Buscar Venta");
+        btnBuscarVenta.addActionListener(e -> buscarVenta());
+        add(btnBuscarVenta);
+
         JButton btnEliminarPelicula = new JButton("Eliminar Pelicula");
         btnEliminarPelicula.addActionListener(e -> eliminarPelicula());
         add(btnEliminarPelicula);
@@ -187,6 +191,54 @@ public class InterfazVisual extends JFrame {
             JOptionPane.showMessageDialog(this, "No se encontro ningun cliente con esa cedula.");
         } else {
             JOptionPane.showMessageDialog(this, "Nombre: " + cliente.getNombre());
+        }
+    }
+
+    private void buscarVenta() {
+        String codigo = JOptionPane.showInputDialog(this, "Codigo de la venta a buscar:");
+
+        if (codigo == null || codigo.trim().isEmpty()) {
+            return;
+        }
+
+        Venta venta = cine.buscarVenta(codigo);
+
+        if (venta == null) {
+            JOptionPane.showMessageDialog(this,
+                    "No se encontro ninguna venta con ese codigo.");
+        } else {
+
+            String informacion = "VENTA ENCONTRADA\n\n"
+                    + "Codigo de venta: " + venta.getCodigo() + "\n"
+                    + "Cliente: " + venta.getCliente().getNombre() + "\n"
+                    + "Cedula: " + venta.getCliente().getCedula() + "\n"
+                    + "Numero de boletas: " + venta.getNumBoletas() + "\n"
+                    + "Forma de pago: " + venta.getFormaPago() + "\n"
+                    + "Fecha de venta: " + venta.getFecha() + "\n"
+                    + "Total: $" + venta.calcularTotal();
+
+            informacion += "\n\nBOLETAS:\n";
+
+            int i = 0;
+            while (i < venta.getNumBoletas()) {
+                Boleta boleta = venta.getBoleta(i);
+
+                informacion += "\nBoleta " + (i + 1) + ": "
+                        + boleta.getCodigo();
+
+                if (boleta.getFuncion() != null) {
+                    informacion += "\n  Funcion: "
+                            + boleta.getFuncion().getCodigo()
+                            + "\n  Fecha y hora: "
+                            + boleta.getFuncion().getFechaHora()
+                            + "\n  Precio: $"
+                            + boleta.getFuncion().getPrecio();
+                }
+
+                i++;
+            }
+
+            JOptionPane.showMessageDialog(this, informacion);
         }
     }
 
