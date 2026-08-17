@@ -13,7 +13,6 @@ public class InterfazVisual extends JFrame {
 
     private Cine cine;
     private SistemaGuardadoCine gestor;
-	private Cine cine;
 
     public InterfazVisual(Cine cine, SistemaGuardadoCine gestor) {
 
@@ -48,6 +47,10 @@ public class InterfazVisual extends JFrame {
         JButton btnBuscarPelicula = new JButton("Buscar Pelicula");
         btnBuscarPelicula.addActionListener(e -> buscarPelicula());
         add(btnBuscarPelicula);
+
+        JButton btnBuscarPeliculasPorTitulo = new JButton("Buscar Pelicula por Titulo");
+        btnBuscarPeliculasPorTitulo.addActionListener(e -> buscarPorTitulo());
+        add(btnBuscarPeliculasPorTitulo);
 
         JButton btnBuscarSala = new JButton("Buscar Sala");
         btnBuscarSala.addActionListener(e -> buscarSala());
@@ -166,8 +169,35 @@ public class InterfazVisual extends JFrame {
         if (pelicula == null) {
             JOptionPane.showMessageDialog(this, "No se encontro ninguna pelicula con ese codigo.");
         } else {
-            JOptionPane.showMessageDialog(this, "Titulo: " + pelicula.getTitulo());
+            JOptionPane.showMessageDialog(this,
+                    "Codigo: " + pelicula.getCodigo()
+                            + "\nTitulo: " + pelicula.getTitulo()
+                            + "\nDuracion: " + pelicula.getDuracionMin() + " min"
+                            + "\nGenero: " + pelicula.getGenero()
+                            + "\nClasificacion: " + pelicula.getClasificacion()
+                            + " (desde " + pelicula.getClasificacion().getEdadMinima() + " años)");
         }
+    }
+
+    private void buscarPorTitulo() {
+        String texto = JOptionPane.showInputDialog(this, "Escriba parte del titulo:");
+        if (texto == null) return;
+
+        Pelicula[] encontradas = cine.buscarPeliculasPorTitulo(texto);
+        if (encontradas.length == 0) {
+            JOptionPane.showMessageDialog(this, "Ninguna pelicula coincide con '" + texto + "'.");
+            return;
+        }
+
+        String lista = "Se encontraron " + encontradas.length + " pelicula(s):\n\n";
+        int i = 0;
+        while (i < encontradas.length) {
+            lista = lista + encontradas[i].getCodigo() + " - " + encontradas[i].getTitulo()
+                    + " (" + encontradas[i].getGenero() + ", "
+                    + encontradas[i].getDuracionMin() + " min)\n";
+            i++;
+        }
+        JOptionPane.showMessageDialog(this, lista);
     }
 
     private void buscarSala() {
@@ -176,18 +206,36 @@ public class InterfazVisual extends JFrame {
         if (sala == null) {
             JOptionPane.showMessageDialog(this, "No se encontro ninguna sala con ese codigo.");
         } else {
-            JOptionPane.showMessageDialog(this, "Sala encontrada: " + sala.getCodigo());
+            JOptionPane.showMessageDialog(this,
+                    "Codigo: " + sala.getCodigo()
+                            + "\nTipo: " + sala.getTipoSala()
+                            + "\nDistribucion: " + sala.getFilas() + " filas x " + sala.getColumnas() + " columnas"
+                            + "\nCapacidad: " + sala.capacidadSala() + " puestos"
+                            + "\nRecargo por sala: " + sala.getTipoSala().getPrecioSala()
+                            + "\nDisponible: " + sala.isDisponible());
         }
     }
 
     private void buscarFuncion() {
         String codigo = JOptionPane.showInputDialog(this, "Codigo de la funcion a buscar:");
+        if (codigo == null) return;
+
         Funcion funcion = cine.buscarFuncion(codigo);
         if (funcion == null) {
             JOptionPane.showMessageDialog(this, "No se encontro ninguna funcion con ese codigo.");
         } else {
-            JOptionPane.showMessageDialog(this, "Pelicula: " + funcion.getPelicula().getTitulo()
-                    + " | Asientos disponibles: " + funcion.asientosDisponibles());
+            int ocupados = funcion.getSala().capacidadSala() - funcion.asientosDisponibles();
+
+            JOptionPane.showMessageDialog(this,
+                    "Codigo: " + funcion.getCodigo()
+                            + "\nPelicula: " + funcion.getPelicula().getTitulo()
+                            + " (" + funcion.getPelicula().getDuracionMin() + " min)"
+                            + "\nSala: " + funcion.getSala().getCodigo()
+                            + " (" + funcion.getSala().getTipoSala() + ")"
+                            + "\nFecha y hora: " + funcion.getFechaHora()
+                            + "\nPrecio base: " + funcion.getPrecio()
+                            + "\nOcupados: " + ocupados + " de " + funcion.getSala().capacidadSala()
+                            + "\nDisponibles: " + funcion.asientosDisponibles());
         }
     }
 
@@ -197,7 +245,11 @@ public class InterfazVisual extends JFrame {
         if (cliente == null) {
             JOptionPane.showMessageDialog(this, "No se encontro ningun cliente con esa cedula.");
         } else {
-            JOptionPane.showMessageDialog(this, "Nombre: " + cliente.getNombre());
+            JOptionPane.showMessageDialog(this,
+                    "Cedula: " + cliente.getCedula()
+                            + "\nNombre: " + cliente.getNombre()
+                            + "\nEdad: " + cliente.getEdad()
+                            + "\nCorreo: " + cliente.getCorreo());
         }
     }
 

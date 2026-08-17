@@ -5,7 +5,7 @@ import guardado.SistemaGuardadoCine;
 
 public class Main {
 
-    static void main(String[] args) {
+    public static void main(String[] args) {
         Cine cine = new Cine("CineEIA", "Envigado");
         SistemaGuardadoCine gestor = new SistemaGuardadoCine("datos");
 

@@ -6,12 +6,12 @@ public class DatosCine {
 
     public static void cargarSalas(Cine cine){
         try {
-            cine.addSala("SE01", 20, 30, TipoSala.ESTANDAR );
-            cine.addSala("SE02", 20, 30, TipoSala.ESTANDAR );
-            cine.addSala("SE03", 20, 30, TipoSala.ESTANDAR );
-            cine.addSala("SP01", 25, 30, TipoSala.PREMIUM );
-            cine.addSala("SP02", 25, 30, TipoSala.PREMIUM );
-            cine.addSala("S3D01", 20, 25, TipoSala.SALA_3D );
+            cine.addSala("SE01", 8, 12, TipoSala.ESTANDAR);    // 96
+            cine.addSala("SE02", 8, 12, TipoSala.ESTANDAR);    // 96
+            cine.addSala("SE03", 7, 10, TipoSala.ESTANDAR);    // 70
+            cine.addSala("SP01", 5, 8, TipoSala.PREMIUM);      // 40
+            cine.addSala("SP02", 5, 8, TipoSala.PREMIUM);      // 40
+            cine.addSala("S3D01", 7, 10, TipoSala.SALA_3D);    // 70
         }catch(DatoInvalidoException e){
             System.out.println("Error al cargar salas" + e.getMessage());
         }
