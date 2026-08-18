@@ -70,6 +70,17 @@ public class PruebaTerminal {
         ana.setCorreo("ana.gomez@nuevo.com");
         System.out.println("Correo actualizado: " + ana.getCorreo());
 
+        // Formas de pago
+        System.out.println();
+        int p = 0;
+        while (p < FormaPago.values().length) {
+            FormaPago forma = FormaPago.values()[p];
+            Venta v = new Venta("VP" + p, ana, null, null, 0, forma, LocalDateTime.now());
+            cine.registrarVenta(v);
+            System.out.println("Venta VP" + p + " registrada con " + v.getFormaPago());
+            p++;
+        }
+
         // Casos que deben ser rechazados
         System.out.println();
         probarError(cine, "codigo repetido");
@@ -77,6 +88,10 @@ public class PruebaTerminal {
         probarError(cine, "horario ocupado");
         probarError(cine, "pelicula inexistente");
         probarError(cine, "correo sin arroba");
+        probarError(cine, "cedula vacia");
+        probarError(cine, "edad negativa");
+        probarError(cine, "precio cero");
+        probarError(cine, "venta duplicada");
         probarError(cine, "eliminar pelicula con funciones");
         probarError(cine, "eliminar funcion inexistente");
 
@@ -104,12 +119,74 @@ public class PruebaTerminal {
         vender(venta, fa1, cine.buscarCliente("1002"), "B004", "GENERAL", 5, 5);
         vender(venta, fa1, ana, "B005", "GENERAL", 2, 3);
 
+        // Prueba de liberar asiento
+        System.out.println();
+        System.out.println("Ocupado (2,3) antes de liberar: " + fa1.getAsiento(2, 3).isOcupado());
+        System.out.println("Disponibles antes: " + fa1.asientosDisponibles());
+        fa1.liberarAsiento(2, 3);
+        System.out.println("Ocupado (2,3) tras liberar: " + fa1.getAsiento(2, 3).isOcupado());
+        System.out.println("Disponibles tras liberar: " + fa1.asientosDisponibles());
+        fa1.ocuparAsiento(2, 3);
+        System.out.println("Disponibles tras volver a ocupar: " + fa1.asientosDisponibles());
+
+        // Prueba de buscar asiento
+        System.out.println();
+        Asiento a1 = fa1.getAsiento(2, 3);
+        System.out.println("Etiqueta del asiento (2,3): " + a1.getEtiqueta());
+        Asiento porEtiqueta = fa1.buscarAsiento(a1.getEtiqueta());
+        System.out.println("buscarAsiento lo encontro: " + (porEtiqueta != null));
+        System.out.println("Coincide con getAsiento(2,3): " + (porEtiqueta == a1));
+        System.out.println("buscarAsiento(ZZ99): " + fa1.buscarAsiento("ZZ99"));
+
+        //Prueba de preferencial
+        System.out.println();
+        System.out.println("Asiento (0,0) preferencial: " + fa1.getAsiento(0, 0).isPreferencial());
+        fa1.getAsiento(0, 0).setPreferencial(true);
+        System.out.println("Tras marcarlo preferencial: " + fa1.getAsiento(0, 0).isPreferencial());
+        fa1.getAsiento(0, 0).setPreferencial(false);
+        System.out.println("Tras desmarcarlo: " + fa1.getAsiento(0, 0).isPreferencial());
+
+        // Prueba de filas y columnas fuera de rango
+        System.out.println();
+        System.out.println("getAsiento(-1, 0): " + fa1.getAsiento(-1, 0));
+        System.out.println("getAsiento(99, 99): " + fa1.getAsiento(99, 99));
+        vender(venta, fa1, ana, "B020", "GENERAL", 99, 99);
+
+        // PRUEBA DE BUSCAR BOLETA
+        System.out.println();
+        System.out.println("buscarBoleta(B001) la encontro: " + (venta.buscarBoleta("B001") != null));
+        System.out.println("buscarBoleta(B999): " + venta.buscarBoleta("B999"));
+        System.out.println("getBoleta(0): " + venta.getBoleta(0).getCodigo());
+        System.out.println("getBoleta(99): " + venta.getBoleta(99));
+
         System.out.println("Boletas en la venta: " + venta.getNumBoletas());
         System.out.println("Total: " + venta.calcularTotal());
         System.out.println("Reembolso con 30 horas: " + venta.calcularReembolsoTotal(30));
         System.out.println("Reembolso con 5 horas: " + venta.calcularReembolsoTotal(5));
         System.out.println("Reembolso con 1 hora: " + venta.calcularReembolsoTotal(1));
         System.out.println("Disponibles en FA1: " + fa1.asientosDisponibles());
+
+        // PRUEBA DE FUNCION LLENA
+        System.out.println();
+        cine.addSala("STEST", 1, 2, TipoSala.ESTANDAR);
+        cine.addFuncion("FTEST", "A02", "STEST",
+                LocalDateTime.of(2026, 10, 1, 15, 0), 10000);
+
+        Funcion ftest = cine.buscarFuncion("FTEST");
+
+        Venta ventaTest = new Venta("V010", ana, null, null, 0,
+                FormaPago.EFECTIVO, LocalDateTime.now());
+        cine.registrarVenta(ventaTest);
+
+        System.out.println("FTEST llena al inicio: " + ftest.estaLlena());
+
+        vender(ventaTest, ftest, ana, "B010", "GENERAL", 0, 0);
+        vender(ventaTest, ftest, ana, "B011", "GENERAL", 0, 1);
+
+        System.out.println("FTEST llena tras vender las dos: " + ftest.estaLlena());
+        System.out.println("Disponibles en FTEST: " + ftest.asientosDisponibles());
+
+        vender(ventaTest, ftest, ana, "B012", "GENERAL", 0, 0);
 
         // Eliminaciones validas
         System.out.println();
@@ -193,24 +270,45 @@ public class PruebaTerminal {
         try {
             if (caso.equals("codigo repetido")) {
                 cine.addPelicula("A01", "Otra", 100, Genero.DRAMA, Clasificacion.MAYORES_15);
+
             } else if (caso.equals("sala invalida")) {
                 cine.addSala("SX01", 0, 5, TipoSala.ESTANDAR);
+
             } else if (caso.equals("horario ocupado")) {
                 cine.addFuncion("FX1", "A02", "SE01",
                         LocalDateTime.of(2026, 9, 10, 20, 30), 12000);
+
             } else if (caso.equals("pelicula inexistente")) {
                 cine.addFuncion("FX2", "X99", "SE01",
                         LocalDateTime.of(2026, 9, 20, 10, 0), 12000);
+
             } else if (caso.equals("correo sin arroba")) {
                 cine.addCliente("1004", "Pedro", 30, "pedro.correo.com");
+
+            } else if (caso.equals("cedula vacia")) {
+                cine.addCliente("   ", "Fantasma", 30, "fantasma@correo.com");
+
+            } else if (caso.equals("edad negativa")) {
+                cine.addCliente("2001", "Raro", -5, "raro@correo.com");
+
+            } else if (caso.equals("precio cero")) {
+                cine.addFuncion("FX3", "A02", "SE02",
+                        LocalDateTime.of(2026, 11, 1, 10, 0), 0);
+
+            } else if (caso.equals("venta duplicada")) {
+                cine.registrarVenta(new Venta("V001", cine.buscarCliente("1001"), null, null, 0,
+                        FormaPago.EFECTIVO, LocalDateTime.now()));
+
             } else if (caso.equals("eliminar pelicula con funciones")) {
                 cine.eliminarPelicula("A01");
+
             } else if (caso.equals("eliminar funcion inexistente")) {
                 cine.eliminarFuncion("FZZ");
             }
+
             System.out.println("Fallo: " + caso + " deberia haber sido rechazado");
+
         } catch (Exception e) {
             System.out.println("Rechazado (" + caso + "): " + e.getMessage());
         }
-    }
-}
+    }}
