@@ -152,7 +152,7 @@ public class PruebaTerminal {
         System.out.println("getAsiento(99, 99): " + fa1.getAsiento(99, 99));
         vender(venta, fa1, ana, "B020", "GENERAL", 99, 99);
 
-        // PRUEBA DE BUSCAR BOLETA
+        // Prueba de buscar boleta
         System.out.println();
         System.out.println("buscarBoleta(B001) la encontro: " + (venta.buscarBoleta("B001") != null));
         System.out.println("buscarBoleta(B999): " + venta.buscarBoleta("B999"));
@@ -166,7 +166,7 @@ public class PruebaTerminal {
         System.out.println("Reembolso con 1 hora: " + venta.calcularReembolsoTotal(1));
         System.out.println("Disponibles en FA1: " + fa1.asientosDisponibles());
 
-        // PRUEBA DE FUNCION LLENA
+        // Prueba de funcion llena
         System.out.println();
         cine.addSala("STEST", 1, 2, TipoSala.ESTANDAR);
         cine.addFuncion("FTEST", "A02", "STEST",
@@ -209,7 +209,7 @@ public class PruebaTerminal {
         System.out.println("Funciones: " + cine.getNumFunciones() + " -> " + cine2.getNumFunciones());
         System.out.println("Ventas:    " + cine.getNumVentas()    + " -> " + cine2.getNumVentas());
 
-        // Lo que exige la profesora
+
         System.out.println();
         Funcion fa1Cargada = cine2.buscarFuncion("FA1");
         System.out.println("Disponibles en FA1 antes: " + fa1.asientosDisponibles());

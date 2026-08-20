@@ -22,7 +22,7 @@ public class InterfazVisual extends JFrame {
         setTitle("Interfaz Visual - " + cine.getNombre());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 500, 650);
-        setLayout(new GridLayout(0, 1, 5, 5));
+        setLayout(new GridLayout(0, 2, 5, 5));
 
         agregarBotones();
     }
