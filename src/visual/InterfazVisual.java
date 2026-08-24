@@ -87,6 +87,10 @@ public class InterfazVisual extends JFrame {
         JButton btnVenderBoleta = new JButton("Vender Boleta");
         btnVenderBoleta.addActionListener(e -> venderBoleta());
         add(btnVenderBoleta);
+
+        JButton btnCalcularReembolso = new JButton("Calcular Reembolso");
+        btnCalcularReembolso.addActionListener(e -> calcularReembolso());
+        add(btnCalcularReembolso);
     }
 
     private void agregarPelicula() {
@@ -446,5 +450,92 @@ public class InterfazVisual extends JFrame {
             JOptionPane.showMessageDialog(this, ex.getMessage(),
                     "No se pudo registrar la venta", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    /**
+     * Pide el codigo de una venta y las horas de anticipacion,
+     * y muestra cuanto se le devolveria al cliente.
+     */
+    private void calcularReembolso() {
+
+        // 1. Se pide la venta
+        String codigo = JOptionPane.showInputDialog(this, "Codigo de la venta a reembolsar:");
+        if (codigo == null || codigo.trim().isEmpty()) {
+            return;
+        }
+
+        Venta venta = cine.buscarVenta(codigo);
+        if (venta == null) {
+            JOptionPane.showMessageDialog(this, "No se encontro ninguna venta con ese codigo.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // 2. Se piden las horas de anticipacion
+        String textoHoras = JOptionPane.showInputDialog(this,
+                "Cuantas horas antes de la funcion se cancela?");
+        if (textoHoras == null) {
+            return;
+        }
+
+        int horasAntes;
+        try {
+            horasAntes = Integer.parseInt(textoHoras.trim());
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Debe escribir un numero entero de horas.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (horasAntes < 0) {
+            JOptionPane.showMessageDialog(this, "Las horas no pueden ser negativas.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // 3. Se calculan los totales
+        double totalPagado = venta.calcularTotal();
+        double totalReembolso = venta.calcularReembolsoTotal(horasAntes);
+
+        String informacion = "CALCULO DE REEMBOLSO\n\n"
+                + "Codigo de venta: " + venta.getCodigo() + "\n"
+                + "Cliente: " + venta.getCliente().getNombre() + "\n"
+                + "Anticipacion: " + horasAntes + " horas\n"
+                + "Total pagado: $" + totalPagado + "\n";
+
+        // 4. Detalle boleta por boleta
+        informacion += "\nDETALLE POR BOLETA:\n";
+
+        int i = 0;
+        while (i < venta.getNumBoletas()) {
+            Boleta boleta = venta.getBoleta(i);
+
+            // Se usa la interfaz como tipo: aqui solo importa que sea reembolsable
+            Reembolsable reembolsable = boleta;
+
+            informacion += "\nBoleta " + (i + 1) + ": " + boleta.getCodigo()
+                    + " (" + boleta.getTipo() + ")"
+                    + "\n  Precio: $" + boleta.calcularPrecio()
+                    + "\n  Reembolso: $" + reembolsable.calcularReembolso(horasAntes);
+
+            if (!reembolsable.esReembolsable(horasAntes)) {
+                informacion += "  -> no aplica";
+            }
+
+            i++;
+        }
+
+        // 5. Resultado final
+        informacion += "\n\nTOTAL A DEVOLVER: $" + totalReembolso;
+
+        if (totalReembolso == 0) {
+            informacion += "\n\nSe necesitan al menos 3 horas de anticipacion.";
+        } else if (horasAntes < 24) {
+            informacion += "\n\n(Se devuelve el 50% por cancelar con menos de 24 horas)";
+        } else {
+            informacion += "\n\n(Se devuelve el 100%)";
+        }
+
+        JOptionPane.showMessageDialog(this, informacion);
     }
 }
